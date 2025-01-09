@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0a0415w" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.23.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <bpmn:collaboration id="Collaboration_1ep6jaq">
+    <bpmn:participant id="SimpleApprovalWorkflowParticipant" name="Simple Approval Workflow" processRef="simple_approval_workflow" />
+  </bpmn:collaboration>
+  <bpmn:process id="simple_approval_workflow" name="simple_approval_workflow" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_11lxct6">
+      <bpmn:lane id="RequesterLane" name="Requester">
+        <bpmn:flowNodeRef>RequestSubmittedStartEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UpdateRequestDataTask</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="ReviewerLane" name="Reviewer">
+        <bpmn:flowNodeRef>ReviewRequestTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ApprovedGateway</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RequestApprovedEndEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RequestRejectedEndEvent</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="RequestSubmittedStartEvent" name="Request Submitted">
+      <bpmn:outgoing>Flow_1whxbks</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="ReviewRequestTask" name="Review Request">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#34;reviewerDecision&#34;: &#34;approved&#34;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1whxbks</bpmn:incoming>
+      <bpmn:incoming>Flow_0kx3e60</bpmn:incoming>
+      <bpmn:outgoing>Flow_1odebxu</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="ApprovedGateway" name="Approved?" default="ReturnForAmendmentSequenceFlow">
+      <bpmn:incoming>Flow_1odebxu</bpmn:incoming>
+      <bpmn:outgoing>ReturnForAmendmentSequenceFlow</bpmn:outgoing>
+      <bpmn:outgoing>ApprovedSequenceFlow</bpmn:outgoing>
+      <bpmn:outgoing>RejectedSequenceFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="UpdateRequestDataTask" name="Update Request Data">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>ReturnForAmendmentSequenceFlow</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kx3e60</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="RequestApprovedEndEvent" name="Request Approved">
+      <bpmn:incoming>ApprovedSequenceFlow</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="RequestRejectedEndEvent" name="Request Rejected">
+      <bpmn:incoming>RejectedSequenceFlow</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1whxbks" sourceRef="RequestSubmittedStartEvent" targetRef="ReviewRequestTask" />
+    <bpmn:sequenceFlow id="Flow_0kx3e60" sourceRef="UpdateRequestDataTask" targetRef="ReviewRequestTask" />
+    <bpmn:sequenceFlow id="Flow_1odebxu" sourceRef="ReviewRequestTask" targetRef="ApprovedGateway" />
+    <bpmn:sequenceFlow id="ReturnForAmendmentSequenceFlow" name="Return for Amendment" sourceRef="ApprovedGateway" targetRef="UpdateRequestDataTask" />
+    <bpmn:sequenceFlow id="ApprovedSequenceFlow" name="Approved" sourceRef="ApprovedGateway" targetRef="RequestApprovedEndEvent">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=reviewerDecision = "approved"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="RejectedSequenceFlow" name="Rejected" sourceRef="ApprovedGateway" targetRef="RequestRejectedEndEvent">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=reviewerDecision = "rejected"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1ep6jaq">
+      <bpmndi:BPMNShape id="Participant_08o696h_di" bpmnElement="SimpleApprovalWorkflowParticipant" isHorizontal="true">
+        <dc:Bounds x="160" y="52" width="900" height="518" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_159chmz_di" bpmnElement="ReviewerLane" isHorizontal="true">
+        <dc:Bounds x="190" y="302" width="870" height="268" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1db6tfz_di" bpmnElement="RequesterLane" isHorizontal="true">
+        <dc:Bounds x="190" y="52" width="870" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="RequestSubmittedStartEvent">
+        <dc:Bounds x="282" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="275" y="202" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00tg6ds_di" bpmnElement="ReviewRequestTask">
+        <dc:Bounds x="480" y="370" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0gd1xp4_di" bpmnElement="ApprovedGateway" isMarkerVisible="true">
+        <dc:Bounds x="665" y="385" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="613" y="373" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1jn9esl_di" bpmnElement="UpdateRequestDataTask">
+        <dc:Bounds x="770" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11qnfdn_di" bpmnElement="RequestApprovedEndEvent">
+        <dc:Bounds x="912" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="907" y="435" width="47" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_18k9x2f_di" bpmnElement="RequestRejectedEndEvent">
+        <dc:Bounds x="912" y="482" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="886" y="525" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1whxbks_di" bpmnElement="Flow_1whxbks">
+        <di:waypoint x="318" y="177" />
+        <di:waypoint x="399" y="177" />
+        <di:waypoint x="399" y="410" />
+        <di:waypoint x="480" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kx3e60_di" bpmnElement="Flow_0kx3e60">
+        <di:waypoint x="820" y="137" />
+        <di:waypoint x="820" y="100" />
+        <di:waypoint x="530" y="100" />
+        <di:waypoint x="530" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1odebxu_di" bpmnElement="Flow_1odebxu">
+        <di:waypoint x="580" y="410" />
+        <di:waypoint x="665" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cc4sce_di" bpmnElement="ReturnForAmendmentSequenceFlow">
+        <di:waypoint x="690" y="385" />
+        <di:waypoint x="690" y="177" />
+        <di:waypoint x="770" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="336" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13m2b30_di" bpmnElement="ApprovedSequenceFlow">
+        <di:waypoint x="715" y="410" />
+        <di:waypoint x="912" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="766" y="392" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1505784_di" bpmnElement="RejectedSequenceFlow">
+        <di:waypoint x="690" y="435" />
+        <di:waypoint x="690" y="500" />
+        <di:waypoint x="912" y="500" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="768" y="483" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

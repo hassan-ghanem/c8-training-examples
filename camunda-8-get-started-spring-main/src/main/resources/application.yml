@@ -1,0 +1,17 @@
+# https://github.com/camunda/camunda-8-get-started-spring
+# https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/#add-the-spring-zeebe-sdk-to-your-project
+# https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/#self-managed
+spring:
+  application:
+    name: process_payments
+camunda:
+  client:
+    mode: self-managed
+    auth:
+      client-id: zeebe
+      client-secret: zecret
+      issuer: http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token
+    zeebe:
+      enabled: true
+      grpc-address: http://localhost:26500
+      rest-address: http://localhost:8088
