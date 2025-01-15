@@ -37,7 +37,8 @@ public class CMapsApplication {
 		try (final ZeebeClient client = ZeebeClient.newClientBuilder()
 				.grpcAddress(URI.create(ZEEBE_GRPC_ADDRESS))
 	            .restAddress(URI.create(ZEEBE_REST_ADDRESS))
-	            .credentialsProvider(credentialsProvider)			
+	            .credentialsProvider(credentialsProvider)
+	            .usePlaintext()
 		     	.build()) {
 			
 			System.out.println("Connected to: " + client.newTopologyRequest().send().join());
